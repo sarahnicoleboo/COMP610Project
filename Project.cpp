@@ -3,10 +3,11 @@
 #include <fstream>
 #include <vector>
 #include <algorithm>
+#include <unordered_map>
 
 using namespace std;
 
-// helper function to verift user input
+// helper function to verify user input
 bool inList(string input, string names[]) {
 	bool b = false;
 	for(int i = 0; i < names->size(); i++){
@@ -17,9 +18,9 @@ bool inList(string input, string names[]) {
 	return b;
 }
 
-// function to populate array with words from file and search for the specified word
+// function to populate array(vector) with words from file and search for the specified word
 bool findWordUsingArray(string fileName, string inputWord) {
-	// first read the values into a vectore
+	// first read the values into a vector
 	vector<string> vectorOfWords;
 	ifstream in(fileName);
 	string str;
@@ -35,6 +36,29 @@ bool findWordUsingArray(string fileName, string inputWord) {
 		return true;
 	} else {
 		return false;
+	}
+}
+
+// function to populate hashtable(unordered map) from file and search for the specified word
+bool findWordUsingHashTable(string fileName, string inputWord) {
+	// first read the values into an unorderedmap
+	unordered_map<string, string> umap;
+	ifstream in(fileName);
+	string str;
+	while(getline(in, str)) {
+		if (str.size() > 0) {
+			umap[str] = str;
+		}
+	}
+	in.close();
+	
+/* 	for (auto x : umap) {
+		cout << x.first << endl;
+	} */
+	if (umap.find(inputWord) == umap.end()) {
+		return false;
+	} else {
+		return true;
 	}
 }
 
@@ -68,10 +92,10 @@ int main()
 	
 	// giving the user an option of which data structure to user
 	cout << "Please enter the name of the data structure to use. \nYour options are:\n"
-		 << "Array\nOtherOne\n";
+		 << "Array\nHashTable\n";
 		 
 	// getting and verifying user input
-	string dataStructureNames[2] = {"Array", "OtherOne"};
+	string dataStructureNames[2] = {"Array", "HashTable"};
 	string inputDS;
 	getline(cin, inputDS);
 	bool shouldRun2 = true;
@@ -85,6 +109,7 @@ int main()
 		}
 	}
 	
+	// if the user selected array
 	if (inputDS == dataStructureNames[0]) {
 		bool searchArrayResult;
 		searchArrayResult = findWordUsingArray(inputFile, inputWord);
@@ -94,5 +119,17 @@ int main()
 			cout << "Word not found";
 		}
 	}
+	
+	// if the user selected hashtable
+	if (inputDS == dataStructureNames[1]) {
+		bool searchHashTableResult;
+		searchHashTableResult = findWordUsingHashTable(inputFile, inputWord);
+		if (searchHashTableResult == true) {
+			cout << "Word found";
+		} else {
+			cout << "Word not found";
+		}
+	}
+	
     return 0;
 }
