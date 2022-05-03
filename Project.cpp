@@ -4,8 +4,10 @@
 #include <vector>
 #include <algorithm>
 #include <unordered_map>
+#include <chrono>
 
 using namespace std;
+using namespace std::chrono;
 
 // helper function to verify user input
 bool inList(string input, string names[]) {
@@ -19,8 +21,9 @@ bool inList(string input, string names[]) {
 }
 
 // function to populate array(vector) with words from file and search for the specified word
-bool findWordUsingArray(string fileName, string inputWord) {
-	// first read the values into a vector
+void findWordUsingArray(string fileName, string inputWord) {
+	auto start = high_resolution_clock::now();	// start timer for loading the data structure
+	// read the values into a vector
 	vector<string> vectorOfWords;
 	ifstream in(fileName);
 	string str;
@@ -30,18 +33,26 @@ bool findWordUsingArray(string fileName, string inputWord) {
 		}
 	}
 	in.close();
+	auto stop = high_resolution_clock::now();	// end timer for loading the data structure
+	auto duration = duration_cast<microseconds>(stop - start);
+	cout << "Loading the array took: " << duration.count() << " microseconds" << endl;
 	
 	// then search for the specified word
+	auto start1 = high_resolution_clock::now();	// start timer for searching for the word
 	if (find(vectorOfWords.begin(), vectorOfWords.end(), inputWord) != vectorOfWords.end()) {
-		return true;
+		auto stop1 = high_resolution_clock::now();	// end timer for searching for the word
+		auto duration1 = duration_cast<microseconds>(stop1 - start1);
+		cout << "Word found! Searching for the word took: " << duration1.count() << " microseconds" << endl;
 	} else {
-		return false;
+		auto stop1 = high_resolution_clock::now(); // end the timer just to stop memory leaks
+		cout << "Word not found";
 	}
 }
 
 // function to populate hashtable(unordered map) from file and search for the specified word
-bool findWordUsingHashTable(string fileName, string inputWord) {
-	// first read the values into an unorderedmap
+void findWordUsingHashTable(string fileName, string inputWord) {
+	auto start = high_resolution_clock::now();	// start timer for loading the data structure
+	// read the values into an unorderedmap
 	unordered_map<string, string> umap;
 	ifstream in(fileName);
 	string str;
@@ -51,14 +62,19 @@ bool findWordUsingHashTable(string fileName, string inputWord) {
 		}
 	}
 	in.close();
+	auto stop = high_resolution_clock::now();	// end timer for loading the data structure
+	auto duration = duration_cast<microseconds>(stop - start);
+	cout << "Loading the hashtable took: " << duration.count() << " microseconds" << endl;
 	
-/* 	for (auto x : umap) {
-		cout << x.first << endl;
-	} */
-	if (umap.find(inputWord) == umap.end()) {
-		return false;
+	//then search for the specified word
+	auto start1 = high_resolution_clock::now();	// start timer for searching for the word
+	if (umap.find(inputWord) == umap.end()) {		
+		auto stop1 = high_resolution_clock::now(); // end the timer just to stop memory leaks
+		cout << "Word not found";
 	} else {
-		return true;
+		auto stop1 = high_resolution_clock::now();	// end timer for searching for the word
+		auto duration1 = duration_cast<microseconds>(stop1 - start1);
+		cout << "Word found! Searching for the word took: " << duration1.count() << " microseconds" << endl;
 	}
 }
 
@@ -111,24 +127,12 @@ int main()
 	
 	// if the user selected array
 	if (inputDS == dataStructureNames[0]) {
-		bool searchArrayResult;
-		searchArrayResult = findWordUsingArray(inputFile, inputWord);
-		if (searchArrayResult == true) {
-			cout << "Word found";
-		} else {
-			cout << "Word not found";
-		}
+		findWordUsingArray(inputFile, inputWord);
 	}
 	
 	// if the user selected hashtable
 	if (inputDS == dataStructureNames[1]) {
-		bool searchHashTableResult;
-		searchHashTableResult = findWordUsingHashTable(inputFile, inputWord);
-		if (searchHashTableResult == true) {
-			cout << "Word found";
-		} else {
-			cout << "Word not found";
-		}
+		findWordUsingHashTable(inputFile, inputWord);
 	}
 	
     return 0;
